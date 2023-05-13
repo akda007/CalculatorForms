@@ -1,4 +1,6 @@
-﻿namespace CalculatorForms.CalculatorEngine
+﻿using System.Globalization;
+
+namespace CalculatorForms.CalculatorEngine
 {
     public enum Operations { Sum, Sub, Mul, Div, Pow, Equals, Backspace, Clear }
     public enum Status { ReadingFirstNumber, ReadingSecondNumber, Waiting }
@@ -69,6 +71,13 @@
             UpdateOperationString($"{firstNumber} {Utils.GetOperationSymbol(operation == null ? Operations.Equals : operation.Value)} {secondNumber} =");
         }
 
+        double ParseNumber(string d) {
+            if(double.TryParse(d, NumberStyles.Any, CultureInfo.InvariantCulture, out double val)) {
+                return val;
+            }
+            return 0;
+        }
+
         private void DoOperation(Operations op) {
             if(string.IsNullOrEmpty(currentNumberStr)) {
                 //Logic to recognize negative numbers
@@ -89,14 +98,14 @@
 
             //Logic to read and handle the numbers when an operation is pressed
             if(CurrentStatus == Status.ReadingFirstNumber) {
-                firstNumber = double.Parse(currentNumberStr);
+                firstNumber = ParseNumber(currentNumberStr);
                 operation = op;
 
                 CurrentStatus = Status.ReadingSecondNumber;
                 UpdateOperationString($"{currentNumberStr} {Utils.GetOperationSymbol(op)}");
                 currentNumberStr = string.Empty;
             } else if(CurrentStatus == Status.ReadingSecondNumber) {
-                secondNumber = double.Parse(currentNumberStr);
+                secondNumber = ParseNumber(currentNumberStr);
 
                 Execute();
 
@@ -124,7 +133,7 @@
                             firstNumber = resultNumber;
                         }
 
-                        secondNumber = double.Parse(currentNumberStr);
+                        secondNumber = ParseNumber(currentNumberStr);
                     }
                     
                     Execute();

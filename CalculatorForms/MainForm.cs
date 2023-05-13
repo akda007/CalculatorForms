@@ -21,15 +21,15 @@ namespace CalculatorForms {
         }
 
         //Link UI and Code
-        private void bt_back_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Backspace);
-        private void bt_eq_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Equals);
-        private void bt_clear_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Clear);
+        private void bt_back_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Backspace);
+        private void bt_eq_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Equals);
+        private void bt_clear_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Clear);
 
-        private void bt_sum_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Sum);
-        private void bt_sub_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Sub);
-        private void bt_mul_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Mul);
-        private void bt_div_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Div);
-        private void bt_pow_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Pow);
+        private void bt_sum_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Sum);
+        private void bt_sub_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Sub);
+        private void bt_mul_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Mul);
+        private void bt_div_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Div);
+        private void bt_pow_Click(object sender, EventArgs e) => _calculator.SendOperation(Operations.Pow);
 
         private void bt_0_Click(object sender, EventArgs e) => _calculator.SendData("0");
         private void bt_1_Click(object sender, EventArgs e) => _calculator.SendData("1");

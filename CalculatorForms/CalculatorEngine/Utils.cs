@@ -2,18 +2,18 @@
 {
     public class Utils
     {
-        private static Dictionary<Logic.Operations, string> opDict = new Dictionary<Logic.Operations, string>() {
-            {Logic.Operations.Sub, "-"},
-            {Logic.Operations.Sum, "+"},
-            {Logic.Operations.Mul, "*"},
-            {Logic.Operations.Div, "/"},
-            {Logic.Operations.Pow, "^"},
-            {Logic.Operations.Backspace, "⌫"},
-            {Logic.Operations.Equals, "="},
-            {Logic.Operations.Clear, "C"}
+        private static Dictionary<Operations, string> opDict = new Dictionary<Operations, string>() {
+            {Operations.Sub, "-"},
+            {Operations.Sum, "+"},
+            {Operations.Mul, "*"},
+            {Operations.Div, "/"},
+            {Operations.Pow, "^"},
+            {Operations.Backspace, "⌫"},
+            {Operations.Equals, "="},
+            {Operations.Clear, "C"}
         };
 
-        public static string GetOperationSymbol(Logic.Operations op)
+        public static string GetOperationSymbol(Operations op)
         {
             return opDict[op];
         }
