@@ -6,41 +6,54 @@ using System.Threading.Tasks;
 
 namespace CalculatorForms {
     public class Calculator {
-        delegate double MathOp(double a, double b);
+        public enum Operations { Sum, Sub, Mul, Div, Pow, Equals, Backspace, Clear }
+        public enum Status { ReadingFirstNumber, ReadingSecondNumber, Waiting }
 
-        public enum Operations {
-            Sum, Sub, Mul, Div, Pow, Equals, Backspace, Clear
-        }
-
-        public enum Status {
-            WritingNumberA,
-            WritingNumberB,
-            Waiting,
-        }
-
+        //Initialize variables
         private double? firstNumber;
         private double? secondNumber;
         private double? resultNumber;
         private string? _numberStr;
 
-        public string Operation { get { return _operation; } }
-        private string _operation;
-        private Operations? _op = null;
+        //Operations History string
+        public string Operation { get { return _oprationStr; } }
+        private string _oprationStr;
+
+        //Result string
         public string Result { get { return _result; } }
         private string _result;
+
+        private Operations? _operation = null;
+        public Status CurrentStatus;
 
         public event EventHandler OperationChanged;
         public event EventHandler ResultChanged;
 
-        public Status CurrentStatus = Status.Waiting;
 
         private void InvokeOperationChanged() => OperationChanged?.Invoke(this, EventArgs.Empty);
         private void InvokeResultChanged() => ResultChanged?.Invoke(this, EventArgs.Empty);
+        
+        //Raise events to Update GUI
         private void RaiseEvents() {
             InvokeResultChanged();
             InvokeOperationChanged();
         }
 
+        private void UpdateOperationString(string str) {
+            _oprationStr = str;
+            InvokeOperationChanged();
+        }
+
+        //Reset Calculator
+        public void Clear() {
+            //Set all vars to default
+            (firstNumber, secondNumber, resultNumber, _numberStr, _operation, _oprationStr, _result) = (default, default, default, default, default, string.Empty, string.Empty);
+
+            CurrentStatus = Status.ReadingFirstNumber;
+            RaiseEvents();
+        }
+
+        //Math Logic
         private double Calculate(Operations? op, double? a, double? b) {
             if(a == null || b == null)
                 return 0;
@@ -65,25 +78,27 @@ namespace CalculatorForms {
             return 0;
         }
 
+        //Manage UI/Math Logic
         private void Execute() {
 
-            resultNumber = Calculate(_op, firstNumber, secondNumber);
+            resultNumber = Calculate(_operation, firstNumber, secondNumber);
             
-            //raise events
+            //Cleanup for the next run
             _numberStr = string.Empty;
             _result = resultNumber.ToString();
-            _operation = $"{_op.ToString()}({firstNumber}, {secondNumber})";
-
+            
             CurrentStatus = Status.Waiting;
+            
+            //Update UI
             RaiseEvents();
+            UpdateOperationString($"{firstNumber} {Utils.GetOperationSymbol(_operation.Value)} {secondNumber} =");
         }
 
+        
 
-        private void MathOperation(Operations op) {
-
-            
-
-            if(string.IsNullOrEmpty(_numberStr)) { //Todo: ao apertar = novamente isso deve ocorrer ao inves de apertar o botao de op
+        private void DoOperation(Operations op) {           
+            if(string.IsNullOrEmpty(_numberStr)) {
+                //Logic to recognize negative numbers
                 if(op == Operations.Sub && firstNumber == null) {
                     _numberStr = "-";
                     _result = _numberStr;
@@ -91,21 +106,24 @@ namespace CalculatorForms {
                     return;
                 }
 
-                _op = op;
+                //Logic to handle operations after the first run is completed
+                _operation = op;
 
-                CurrentStatus = Status.WritingNumberB;
+                CurrentStatus = Status.ReadingSecondNumber;
                 return;
             }
 
-            if(CurrentStatus == Status.WritingNumberA) {
-                
+            //Logic to read and handle the numbers whan an operation is pressed
+            if(CurrentStatus == Status.ReadingFirstNumber) {               
 
                 firstNumber = double.Parse(_numberStr);
-                _op = op;
+                _operation = op;
 
-                CurrentStatus = Status.WritingNumberB;
+                CurrentStatus = Status.ReadingSecondNumber;
                 _numberStr = string.Empty;
-            } else if (CurrentStatus == Status.WritingNumberB) {
+                UpdateOperationString($"{_numberStr} {Utils.GetOperationSymbol(op)}");
+
+            } else if (CurrentStatus == Status.ReadingSecondNumber) {
                 secondNumber = double.Parse(_numberStr);
 
                 Execute();
@@ -113,18 +131,13 @@ namespace CalculatorForms {
                 firstNumber = resultNumber;
                 _numberStr = string.Empty;
 
-                CurrentStatus = Status.WritingNumberA;
-                _op = op;
+                CurrentStatus = Status.ReadingFirstNumber;
+                _operation = op;
             }            
         }
 
-        public void Clear() {
-            (firstNumber, secondNumber, resultNumber, _numberStr, _op, _operation, _result) = (default, default, default, default, default, string.Empty, string.Empty);
-
-            CurrentStatus = Status.WritingNumberA;
-            RaiseEvents();
-        }
-
+        
+        //Method to recieve operations
         public void SendOperation(Operations op) {
             switch (op) {
                 //Reset Calculator
@@ -153,19 +166,22 @@ namespace CalculatorForms {
                     return;
 
                 default:
-                    MathOperation(op);
+                    DoOperation(op);
                     return;
             }
 
         }
 
+        //Method to recieve data: 1-9 and .
         public void SendData(string num) {
 
             switch(CurrentStatus) {
+                //Logic to restart the calculator if a number
+                //is pressed after the first run is complete.
                 case Status.Waiting:
                     Clear();
                     _numberStr = num;
-                    CurrentStatus = Status.WritingNumberA;
+                    CurrentStatus = Status.ReadingFirstNumber;
 
                     break;
 
@@ -183,10 +199,10 @@ namespace CalculatorForms {
             secondNumber = null;
             resultNumber = null;
             _result = string.Empty;
-            _operation = string.Empty;
+            _oprationStr = string.Empty;
             _numberStr = string.Empty;
 
-            CurrentStatus = Status.WritingNumberA;
+            CurrentStatus = Status.ReadingFirstNumber;
         }
     }
 }
