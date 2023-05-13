@@ -1,7 +1,7 @@
 # Calculator Forms
 
 ### English
-Calculator Forms is a .NET 6 simple calculator made with winforms for learning purposes.
+Calculator Forms is a simple .NET 6 calculator made with winforms for learning purposes.
 
 
 ### Português
