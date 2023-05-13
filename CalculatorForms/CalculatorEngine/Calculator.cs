@@ -1,29 +1,28 @@
-﻿namespace CalculatorForms {
+﻿namespace CalculatorForms.CalculatorEngine
+{
+    public enum Operations { Sum, Sub, Mul, Div, Pow, Equals, Backspace, Clear }
+    public enum Status { ReadingFirstNumber, ReadingSecondNumber, Waiting }
+
 
     public class Calculator {
-
-        public enum Operations { Sum, Sub, Mul, Div, Pow, Equals, Backspace, Clear }
-
-        public enum Status { ReadingFirstNumber, ReadingSecondNumber, Waiting }
-
         //Initialize variables
         private double? firstNumber;
 
         private double? secondNumber;
         private double? resultNumber;
-        private string? _numberStr;
+        private string? currentNumberStr;
+
+        private Logic calculatorLogic;
 
         //Operations History string
-        public string Operation { get { return _oprationStr; } }
-
-        private string _oprationStr;
+        public string Operation { get { return operationStr; } }
+        private string operationStr;
 
         //Result string
-        public string Result { get { return _result; } }
+        public string Result { get { return result; } }
+        private string result;
 
-        private string _result;
-
-        private Operations? _operation = null;
+        private Operations? operation = null;
         public Status CurrentStatus;
 
         public event EventHandler OperationChanged;
@@ -41,71 +40,47 @@
         }
 
         private void UpdateOperationString(string str) {
-            _oprationStr = str;
+            operationStr = str;
             InvokeOperationChanged();
         }
 
         //Reset Calculator
         public void Clear() {
             //Set all vars to default
-            (firstNumber, secondNumber, resultNumber, _numberStr, _operation, _oprationStr, _result) = (default, default, default, default, default, string.Empty, string.Empty);
+            (firstNumber, secondNumber, resultNumber, currentNumberStr, operation, operationStr, result) = (default, default, default, default, default, string.Empty, string.Empty);
 
             CurrentStatus = Status.ReadingFirstNumber;
             RaiseEvents();
         }
-
-        //Math Logic
-        private double Calculate(Operations? op, double? a, double? b) {
-            if(a == null || b == null)
-                return 0;
-
-            switch(op) {
-                case Operations.Sum:
-                    return a.Value + b.Value;
-
-                case Operations.Sub:
-                    return a.Value - b.Value;
-
-                case Operations.Div:
-                    return a.Value / b.Value;
-
-                case Operations.Mul:
-                    return a.Value * b.Value;
-
-                case Operations.Pow:
-                    return Math.Pow(a.Value, b.Value);
-            }
-
-            return 0;
-        }
+        
 
         //Manage UI/Math Logic
         private void Execute() {
-            resultNumber = Calculate(_operation, firstNumber, secondNumber);
+            resultNumber = calculatorLogic.Calculate(operation, firstNumber, secondNumber);
 
             //Cleanup for the next run
-            _numberStr = string.Empty;
-            _result = resultNumber.ToString();
+            currentNumberStr = string.Empty;
+            result = resultNumber.ToString();
 
             CurrentStatus = Status.Waiting;
 
             //Update UI
             RaiseEvents();
-            UpdateOperationString($"{firstNumber} {Utils.GetOperationSymbol(_operation == null ? Operations.Equals : _operation.Value)} {secondNumber} =");
+            UpdateOperationString($"{firstNumber} {Utils.GetOperationSymbol(operation == null ? Operations.Equals : operation.Value)} {secondNumber} =");
         }
 
         private void DoOperation(Operations op) {
-            if(string.IsNullOrEmpty(_numberStr)) {
+            if(string.IsNullOrEmpty(currentNumberStr)) {
                 //Logic to recognize negative numbers
                 if(op == Operations.Sub && firstNumber == null) {
-                    _numberStr = "-";
-                    _result = _numberStr;
+                    currentNumberStr = "-";
+                    result = currentNumberStr;
                     RaiseEvents();
                     return;
                 }
 
                 //Logic to handle operations after the first run is completed
-                _operation = op;
+                operation = op;
 
                 CurrentStatus = Status.ReadingSecondNumber;
                 UpdateOperationString($"{resultNumber} {Utils.GetOperationSymbol(op)}");
@@ -114,22 +89,22 @@
 
             //Logic to read and handle the numbers when an operation is pressed
             if(CurrentStatus == Status.ReadingFirstNumber) {
-                firstNumber = double.Parse(_numberStr);
-                _operation = op;
+                firstNumber = double.Parse(currentNumberStr);
+                operation = op;
 
                 CurrentStatus = Status.ReadingSecondNumber;
-                UpdateOperationString($"{_numberStr} {Utils.GetOperationSymbol(op)}");
-                _numberStr = string.Empty;
+                UpdateOperationString($"{currentNumberStr} {Utils.GetOperationSymbol(op)}");
+                currentNumberStr = string.Empty;
             } else if(CurrentStatus == Status.ReadingSecondNumber) {
-                secondNumber = double.Parse(_numberStr);
+                secondNumber = double.Parse(currentNumberStr);
 
                 Execute();
 
                 firstNumber = resultNumber;
-                _numberStr = string.Empty;
+                currentNumberStr = string.Empty;
 
                 CurrentStatus = Status.ReadingFirstNumber;
-                _operation = op;
+                operation = op;
             }
         }
 
@@ -142,23 +117,23 @@
                     return;
 
                 case Operations.Equals:
-                    if(string.IsNullOrEmpty(_numberStr)) {
+                    if(string.IsNullOrEmpty(currentNumberStr)) {
                         firstNumber = resultNumber;
                     } else {
                         if(resultNumber != null) {
                             firstNumber = resultNumber;
                         }
 
-                        secondNumber = double.Parse(_numberStr);
+                        secondNumber = double.Parse(currentNumberStr);
                     }
                     
                     Execute();
                     return;
 
                 case Operations.Backspace:
-                    if(!string.IsNullOrEmpty(_numberStr)) {
-                        _numberStr = _numberStr.Remove(_numberStr.Length - 1);
-                        _result = _numberStr;
+                    if(!string.IsNullOrEmpty(currentNumberStr)) {
+                        currentNumberStr = currentNumberStr.Remove(currentNumberStr.Length - 1);
+                        result = currentNumberStr;
                     }
                     RaiseEvents();
                     return;
@@ -176,16 +151,16 @@
                 //is pressed after the first run is complete.
                 case Status.Waiting:
                     Clear();
-                    _numberStr = num;
+                    currentNumberStr = num;
                     CurrentStatus = Status.ReadingFirstNumber;
 
                     break;
 
                 default:
-                    _numberStr += num;
+                    currentNumberStr += num;
                     break;
             }
-            _result = _numberStr;
+            result = currentNumberStr;
             RaiseEvents();
         }
 
@@ -193,11 +168,12 @@
             firstNumber = null;
             secondNumber = null;
             resultNumber = null;
-            _result = string.Empty;
-            _oprationStr = string.Empty;
-            _numberStr = string.Empty;
+            result = string.Empty;
+            operationStr = string.Empty;
+            currentNumberStr = string.Empty;
 
             CurrentStatus = Status.ReadingFirstNumber;
+            calculatorLogic = new Logic();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using CalculatorForms.CalculatorEngine;
 
 namespace CalculatorForms {
     public partial class MainForm: Form {
