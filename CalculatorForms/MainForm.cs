@@ -9,12 +9,8 @@ namespace CalculatorForms {
             _calculator = new Calculator();
         }
 
-        private void ButtonMessageEvent(string message) {
-
-        }
-
-
         private void MainForm_Load(object sender, EventArgs e) {
+            //Asign events
             _calculator.OperationChanged += (o, a) => {
                 display_calc.Text = _calculator.Operation;
             };
@@ -25,8 +21,8 @@ namespace CalculatorForms {
 
         //Link UI and Code
         private void bt_back_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Backspace);
-        private void bt_clear_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Clear);
         private void bt_eq_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Equals);
+        private void bt_clear_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Clear);
 
         private void bt_sum_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Sum);
         private void bt_sub_Click(object sender, EventArgs e) => _calculator.SendOperation(Calculator.Operations.Sub);
@@ -45,5 +41,7 @@ namespace CalculatorForms {
         private void bt_8_Click(object sender, EventArgs e) => _calculator.SendData("8");
         private void bt_9_Click(object sender, EventArgs e) => _calculator.SendData("9");
         private void bt_dot_Click(object sender, EventArgs e) => _calculator.SendData(".");
+
+        
     }
 }

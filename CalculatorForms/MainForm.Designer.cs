@@ -23,10 +23,11 @@
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             display_calc = new Label();
             display_result = new Label();
             buttonGrid = new TableLayoutPanel();
-            button1 = new Button();
+            bt_clear = new Button();
             bt_dot = new Button();
             bt_0 = new Button();
             bt_3 = new Button();
@@ -53,6 +54,7 @@
             display_calc.BackColor = Color.White;
             display_calc.Dock = DockStyle.Top;
             display_calc.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            display_calc.ForeColor = SystemColors.ControlDarkDark;
             display_calc.Location = new Point(0, 0);
             display_calc.Name = "display_calc";
             display_calc.Size = new Size(322, 30);
@@ -63,7 +65,7 @@
             // 
             display_result.BackColor = Color.White;
             display_result.Dock = DockStyle.Top;
-            display_result.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            display_result.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
             display_result.Location = new Point(0, 30);
             display_result.Name = "display_result";
             display_result.Size = new Size(322, 30);
@@ -78,7 +80,7 @@
             buttonGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             buttonGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             buttonGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            buttonGrid.Controls.Add(button1, 0, 4);
+            buttonGrid.Controls.Add(bt_clear, 0, 4);
             buttonGrid.Controls.Add(bt_dot, 2, 4);
             buttonGrid.Controls.Add(bt_0, 1, 4);
             buttonGrid.Controls.Add(bt_3, 2, 3);
@@ -113,17 +115,18 @@
             buttonGrid.Size = new Size(322, 281);
             buttonGrid.TabIndex = 2;
             // 
-            // button1
+            // bt_clear
             // 
-            button1.Dock = DockStyle.Fill;
-            button1.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            button1.Location = new Point(5, 221);
-            button1.Margin = new Padding(1);
-            button1.Name = "button1";
-            button1.Size = new Size(76, 55);
-            button1.TabIndex = 20;
-            button1.Text = "C";
-            button1.UseVisualStyleBackColor = true;
+            bt_clear.Dock = DockStyle.Fill;
+            bt_clear.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            bt_clear.Location = new Point(5, 221);
+            bt_clear.Margin = new Padding(1);
+            bt_clear.Name = "bt_clear";
+            bt_clear.Size = new Size(76, 55);
+            bt_clear.TabIndex = 20;
+            bt_clear.Text = "C";
+            bt_clear.UseVisualStyleBackColor = true;
+            bt_clear.Click += bt_clear_Click;
             // 
             // bt_dot
             // 
@@ -368,6 +371,7 @@
             Controls.Add(buttonGrid);
             Controls.Add(display_result);
             Controls.Add(display_calc);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(210, 270);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterParent;
@@ -400,6 +404,6 @@
         private Button bt_mul;
         private Button bt_back;
         private Button bt_sum;
-        private Button button1;
+        private Button bt_clear;
     }
 }
