@@ -126,6 +126,9 @@ namespace CalculatorForms.CalculatorEngine
                     return;
 
                 case Operations.Equals:
+                    if(operation == null && secondNumber == null)
+                        return;
+
                     if(string.IsNullOrEmpty(currentNumberStr)) {
                         firstNumber = resultNumber;
                     } else {
